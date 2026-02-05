@@ -1,4 +1,4 @@
-name: Auto Deploy Laravel with MySQL
+name: Auto Deploy Laravel (Final)
 
 on:
   push:
@@ -31,21 +31,29 @@ jobs:
           username: ubuntu
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
-            # Project folder mein jayein (Ya create karein agar pehle se nahi hai)
-            mkdir -p ~/laravel-project
             cd ~/laravel-project
-
-            # Sirf docker-compose file ko update karne ke liye (ya poora repo pull karein)
-            # Yahan hum assume kar rahe hain aapne docker-compose file server pe rakhi hai
-            # Sabse asaan tariqa: Docker Compose file ko yahan echo se create kar dena ya git pull karna
             
-            # 1. Nayi images pull karein
-            sudo docker compose pull
+            # 1. GitHub se latest docker-compose aur settings pull karna
+            git pull origin main
 
-            # 2. Containers restart karein (Down karke Up)
+            # 2. Purane containers ko update karna (Nayi image pull hogi)
+            sudo docker compose pull
             sudo docker compose up -d
 
-            # 3. Laravel Optimization & Migration
+            # 3. Dependencies aur Permissions (Volume ki wajah se server pe zaroori hain)
+            # Hum ek temporary container chalayenge composer install ke liye
+            sudo docker run --rm -v $(pwd):/app composer install --ignore-platform-reqs
+
+            # 4. Laravel Internal Commands
+            # Thora wait taaki database container active ho jaye
             sleep 10
+            sudo docker exec laravel-app php artisan key:generate --force
             sudo docker exec laravel-app php artisan migrate --force
             sudo docker exec laravel-app php artisan config:cache
+            sudo docker exec laravel-app php artisan view:cache
+
+            # 5. Permissions fix
+            sudo chmod -R 777 storage bootstrap/cache
+            
+            # 6. Cleanup (Purani images delete karna taaki space bache)
+            sudo docker image prune -f
