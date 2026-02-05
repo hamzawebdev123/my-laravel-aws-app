@@ -1,4 +1,4 @@
-name: Auto Deploy Laravel
+name: Auto Deploy Laravel with MySQL
 
 on:
   push:
@@ -31,33 +31,21 @@ jobs:
           username: ubuntu
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
-            # 1. Nayi image pull karein
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/laravel-app:latest
+            # Project folder mein jayein (Ya create karein agar pehle se nahi hai)
+            mkdir -p ~/laravel-project
+            cd ~/laravel-project
+
+            # Sirf docker-compose file ko update karne ke liye (ya poora repo pull karein)
+            # Yahan hum assume kar rahe hain aapne docker-compose file server pe rakhi hai
+            # Sabse asaan tariqa: Docker Compose file ko yahan echo se create kar dena ya git pull karna
             
-            # 2. Port 80 ko khali karein (Har wo container remove karein jo 80 par chal raha hai)
-            sudo docker rm -f $(sudo docker ps -q --filter "publish=80") || true
-            
-            # 3. Purana container (agar naam se bacha hai) remove karein
-            sudo docker rm -f laravel-app || true
-            
-            # 4. Naya container start karein
-            sudo docker run -d --name laravel-app -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/laravel-app:latest
-            
-            # 5. Laravel Setup (Auto Commands)
-            # Thora intezar taaki container puri tarah start ho jaye
-            sleep 5
-            
-            # .env file copy karein agar nahi hai
-            sudo docker exec laravel-app cp .env.example .env || true
-            
-            # App Key generate karein
-            sudo docker exec laravel-app php artisan key:generate --force || true
-            
-            # SQLite database file banayein
-            sudo docker exec laravel-app touch database/database.sqlite || true
-            
-            # Permissions sahi karein taaki database writeable ho
-            sudo docker exec laravel-app chmod -R 777 database storage bootstrap/cache || true
-            
-            # Database migration chalayein
-            sudo docker exec laravel-app php artisan migrate --force || true
+            # 1. Nayi images pull karein
+            sudo docker compose pull
+
+            # 2. Containers restart karein (Down karke Up)
+            sudo docker compose up -d
+
+            # 3. Laravel Optimization & Migration
+            sleep 10
+            sudo docker exec laravel-app php artisan migrate --force
+            sudo docker exec laravel-app php artisan config:cache
