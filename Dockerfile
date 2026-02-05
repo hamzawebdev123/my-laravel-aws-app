@@ -27,5 +27,8 @@ COPY . .
 RUN mkdir -p /var/www/storage /var/www/bootstrap/cache && \
     chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-EXPOSE 9000
-CMD ["php-fpm"]
+# 7. Port 8000 expose karein (Kyunke hum artisan serve use karenge)
+EXPOSE 8000
+
+# 8. Laravel server start karein jo bahar ki requests accept kare
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
