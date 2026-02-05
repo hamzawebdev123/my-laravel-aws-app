@@ -31,7 +31,14 @@ jobs:
           username: ubuntu
           key: ${{ secrets.AWS_SSH_KEY }}
           script: |
+            # 1. Nayi image pull karein
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/laravel-app:latest
-            sudo docker stop laravel-app || true
-            sudo docker rm laravel-app || true
+            
+            # 2. Port 80 ko khali karein (Har wo container remove karein jo 80 par chal raha hai)
+            sudo docker rm -f $(sudo docker ps -q --filter "publish=80") || true
+            
+            # 3. Purana container (agar naam se bacha hai) remove karein
+            sudo docker rm -f laravel-app || true
+            
+            # 4. Naya container start karein
             sudo docker run -d --name laravel-app -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/laravel-app:latest
