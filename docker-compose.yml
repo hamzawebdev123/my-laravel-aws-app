@@ -2,20 +2,16 @@ version: '3.8'
 services:
   # Laravel App
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: hndevelopment/laravel-app:latest
     container_name: laravel-app
     restart: always
     ports:
       - "80:8000"
+    volumes:
+      - .:/var/www
+      - ./.env:/var/www/.env
     depends_on:
       - mysql_db
-    environment:
-      DB_HOST: mysql_db
-      DB_DATABASE: laravel_db
-      DB_USERNAME: laravel_user
-      DB_PASSWORD: your_secure_password
 
   # MySQL Database
   mysql_db:
@@ -29,6 +25,21 @@ services:
       MYSQL_ROOT_PASSWORD: root_password
     volumes:
       - mysql_data:/var/lib/mysql
+
+  # phpMyAdmin (Database Viewer)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql_db
+      - PMA_USER=laravel_user
+      - PMA_PASSWORD=your_secure_password
+    depends_on:
+      - mysql_db
 
 volumes:
   mysql_data:
