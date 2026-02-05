@@ -22,7 +22,10 @@ WORKDIR /var/www
 COPY . .
 
 # 6. Permissions set karein
-RUN chown -R www-data:www-data /var/www/storage /var/www/cache
+# Purani line: RUN chown -R www-data:www-data /var/www/storage /var/www/cache
+# Nayi behtar line:
+RUN mkdir -p /var/www/storage /var/www/bootstrap/cache && \
+    chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 9000
 CMD ["php-fpm"]
