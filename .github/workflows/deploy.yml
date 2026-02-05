@@ -42,3 +42,22 @@ jobs:
             
             # 4. Naya container start karein
             sudo docker run -d --name laravel-app -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/laravel-app:latest
+            
+            # 5. Laravel Setup (Auto Commands)
+            # Thora intezar taaki container puri tarah start ho jaye
+            sleep 5
+            
+            # .env file copy karein agar nahi hai
+            sudo docker exec laravel-app cp .env.example .env || true
+            
+            # App Key generate karein
+            sudo docker exec laravel-app php artisan key:generate --force || true
+            
+            # SQLite database file banayein
+            sudo docker exec laravel-app touch database/database.sqlite || true
+            
+            # Permissions sahi karein taaki database writeable ho
+            sudo docker exec laravel-app chmod -R 777 database storage bootstrap/cache || true
+            
+            # Database migration chalayein
+            sudo docker exec laravel-app php artisan migrate --force || true
