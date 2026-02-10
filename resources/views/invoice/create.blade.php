@@ -39,7 +39,7 @@
                         <div class="flex flex-wrap gap-4 items-end">
                             <div class="flex-[3] min-w-[200px]">
                                 <label class="text-xs font-semibold text-gray-500 mb-1 block">Description</label>
-                                <input type="text" name="item" class="w-full rounded-lg border-gray-200 p-3 focus:ring-blue-500 focus:border-blue-500 border" placeholder="e.g. Website Maintenance">
+                                <input type="text" name="item" class="w-full rounded-lg border-gray-200 p-3 focus:ring-blue-500 focus:border-blue-500 border" placeholder="description">
                             </div>
                             <div class="flex-1 min-w-[80px]">
                                 <label class="text-xs font-semibold text-gray-500 mb-1 block">Qty</label>
