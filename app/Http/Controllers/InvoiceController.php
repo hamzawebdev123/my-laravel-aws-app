@@ -11,6 +11,12 @@ class InvoiceController extends Controller
     public function create() {
         return view('invoice.create');
     }
+    public function index() {
+        // Saari invoices database se uthao (Latest pehle)
+        $invoices = Invoice::orderBy('created_at', 'desc')->get();
+        
+        return view('invoice.index', compact('invoices'));
+    }
 
     public function download(Request $request) 
     {
@@ -45,5 +51,22 @@ $pdf = Pdf::loadView('invoice.pdf_template', [
 ]);
 
 return $pdf->download($invoice->invoice_number . '.pdf');
+    }
+    public function reDownload($id) {
+        // Database se specific invoice dhoondo ID ke zariye
+        $invoice = Invoice::findOrFail($id);
+    
+        // Wahi PDF load karo purane data ke sath
+        $pdf = Pdf::loadView('invoice.pdf_template', [
+            'invoice'          => $invoice,
+            'client_name'      => $invoice->client_name,
+            'client_email'     => $invoice->client_email,
+            'item'             => $invoice->item_description,
+            'price'            => $invoice->price,
+            'qty'              => $invoice->quantity,
+            'total'            => $invoice->total_amount,
+        ]);
+    
+        return $pdf->download($invoice->invoice_number . '.pdf');
     }
 }

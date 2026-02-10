@@ -11,3 +11,5 @@ Route::get('/hello', function () {
 });
 Route::get('/', [InvoiceController::class, 'create']);
 Route::post('/invoice/download', [InvoiceController::class, 'download']);
+Route::get('/invoices', [InvoiceController::class, 'index']);
+Route::get('/invoice/download/{id}', [InvoiceController::class, 'reDownload'])->name('invoice.redownload');
