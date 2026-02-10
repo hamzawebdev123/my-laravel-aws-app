@@ -5,7 +5,7 @@
     <div class="max-w-6xl mx-auto">
         <div class="flex justify-between items-center mb-8">
             <h2 class="text-3xl font-extrabold text-gray-900">Invoice <span class="text-blue-600">History</span></h2>
-            <a href="/" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition">
+            <a href="/invoices" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition">
                 <i class="fa-solid fa-plus mr-2"></i> New Invoice
             </a>
         </div>
